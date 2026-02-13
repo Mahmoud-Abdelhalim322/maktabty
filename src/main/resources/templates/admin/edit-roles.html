@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit User Roles</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; max-width: 600px; }
+        h1 { color: #333; }
+        form { background-color: #f9f9f9; padding: 20px; border-radius: 5px; }
+        div { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="checkbox"] { margin-right: 5px; }
+        input[type="submit"] { padding: 10px 20px; background-color: #0066cc; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        input[type="submit"]:hover { background-color: #0052a3; }
+        a { color: #0066cc; text-decoration: none; margin-left: 10px; }
+        a:hover { text-decoration: underline; }
+        nav { margin-bottom: 20px; }
+        nav a { margin-right: 15px; text-decoration: none; color: #0066cc; }
+        nav a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a th:href="@{/}">Home</a> |
+        <a th:href="@{/books}">Books</a> |
+        <a th:href="@{/profile}">Profile</a> |
+        <a th:href="@{/admin/users}">Admin</a>
+    </nav>
+    <h1>Edit Roles for <span th:text="${user.username}"></span></h1>
+
+    <div th:if="${success}" style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 4px; margin-bottom: 20px;">
+        <strong th:text="${success}"></strong>
+    </div>
+
+    <form th:action="@{/admin/users/{id}/roles(id=${user.id})}" method="post">
+        <div th:each="role : ${allRoles}">
+            <label>
+                <input type="radio" name="roleIds" th:value="${role.id}" th:checked="${user.roles.contains(role)}"/>
+                <span th:text="${role.name}"></span>
+            </label>
+        </div>
+        <div>
+            <input type="submit" value="Update Roles"/>
+            <a th:href="@{/admin/users}">Cancel</a>
+        </div>
+    </form>
+</body>
+</html>

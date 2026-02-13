@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Categories</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        nav { margin-bottom: 20px; }
+        nav a { margin-right: 15px; text-decoration: none; color: #0066cc; }
+        nav a:hover { text-decoration: underline; }
+        h1 { color: #333; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; }
+        .logout-form { }
+        .logout-form input { padding: 5px 10px; background-color: #ff6b6b; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        table th, table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        table th { background-color: #f2f2f2; }
+        a { color: #0066cc; text-decoration: none; margin-right: 5px; }
+        a:hover { text-decoration: underline; }
+        .delete-form { display: inline; }
+        .delete-btn { padding: 3px 8px; background-color: #ff6b6b; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px; }
+        .delete-btn:hover { background-color: #ff4444; }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <h1>Welcome to Maktabty</h1>
+        <form th:action="@{/logout}" method="post" class="logout-form">
+            <input type="submit" value="Logout"/>
+        </form>
+    </div>
+    <div class="top-bar">
+        <h1>Categories</h1>
+        
+    </div>
+    
+    <div th:if="${success}" style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 4px; margin-bottom: 20px;">
+        <strong th:text="${success}"></strong>
+    </div>
+    <div th:if="${error}" style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 4px; margin-bottom: 20px;">
+        <strong th:text="${error}"></strong>
+    </div>
+    
+    <nav>
+        <a th:href="@{/}">Home</a> |
+        <a th:href="@{/categories}">Categories</a> |
+        <a th:href="@{/booktypes}">Book Types</a> |
+        <a th:href="@{/books}">Books</a> |
+        <a th:href="@{/profile}">Profile</a>
+        <span sec:authorize="hasRole('ADMIN')"> | <a th:href="@{/admin/users}">Admin</a></span>
+    </nav>
+    <p sec:authorize="hasAnyRole('ADMIN', 'MANAGER')"><a th:href="@{/categories/add}">+ Add New Category</a></p>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="category : ${categories}">
+                <td th:text="${category.name}"></td>
+                <td>
+                    <a th:href="@{/categories/{id}(id=${category.id})}">View</a>
+                    <span sec:authorize="hasAnyRole('ADMIN', 'MANAGER')"> | 
+                        <form th:action="@{/categories/{id}(id=${category.id})}" method="post" class="delete-form" onsubmit="return confirm('Are you sure?');">
+                            <input type="hidden" name="_method" value="DELETE"/>
+                            <button type="submit" class="delete-btn">Delete</button>
+                        </form>
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

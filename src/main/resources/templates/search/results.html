@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Search Results - Maktabty</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        nav { margin-bottom: 20px; }
+        nav a { margin: 0 15px; text-decoration: none; color: #0066cc; font-weight: bold; }
+        nav a:hover { text-decoration: underline; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .logout-form input { padding: 5px 10px; background-color: #ff6b6b; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        .search-bar { margin: 20px 0; }
+        .search-bar input[type="text"] { padding: 8px; width: 300px; border: 1px solid #ccc; border-radius: 4px; }
+        .search-bar input[type="submit"] { padding: 8px 16px; background-color: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .search-bar input[type="submit"]:hover { background-color: #004499; }
+        .results-section { margin: 20px 0; }
+        .results-section h3 { color: #555; }
+        .result-item { margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        .result-item a { text-decoration: none; color: #0066cc; }
+        .result-item a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <h1>Search Results</h1>
+        <form th:action="@{/logout}" method="post" class="logout-form">
+            <input type="submit" value="Logout"/>
+        </form>
+    </div>
+    <nav>
+        <a th:href="@{/}">Home</a> |
+        <a th:href="@{/categories}">Categories</a> |
+        <a th:href="@{/booktypes}">Book Types</a> |
+        <a th:href="@{/books}">Books</a> |
+        <a th:href="@{/profile}">Profile</a>
+        <span sec:authorize="hasRole('ADMIN')"> | <a th:href="@{/admin/users}">Admin</a></span>
+    </nav>
+    <div class="search-bar">
+        <form th:action="@{/search}" method="get">
+            <input type="text" name="q" th:value="${query}" placeholder="Search books, types, categories..." required/>
+            <input type="submit" value="Search"/>
+        </form>
+    </div>
+    <div th:if="${results != null}">
+        <div class="results-section" th:if="${results.books != null and !results.books.isEmpty()}">
+            <h3>Books</h3>
+            <div th:each="book : ${results.books}" class="result-item">
+                <a th:href="@{'/books/' + ${book.id}}"><strong th:text="${book.title}"></strong></a> by <span th:text="${book.author}"></span>
+                <p th:text="${book.description}"></p>
+            </div>
+        </div>
+        <div class="results-section" th:if="${results.bookTypes != null and !results.bookTypes.isEmpty()}">
+            <h3>Book Types</h3>
+            <div th:each="bookType : ${results.bookTypes}" class="result-item">
+                <a th:href="@{'/booktypes/' + ${bookType.id}}"><strong th:text="${bookType.typeName}"></strong></a>
+                <span th:if="${bookType.category != null}"> in <span th:text="${bookType.category.name}"></span></span>
+            </div>
+        </div>
+        <div class="results-section" th:if="${results.categories != null and !results.categories.isEmpty()}">
+            <h3>Categories</h3>
+            <div th:each="category : ${results.categories}" class="result-item">
+                <a th:href="@{'/categories/' + ${category.id}}"><strong th:text="${category.name}"></strong></a>
+            </div>
+        </div>
+        <div th:if="${results.books.isEmpty() and results.bookTypes.isEmpty() and results.categories.isEmpty()}">
+            <p>No results found for "<span th:text="${query}"></span>".</p>
+        </div>
+    </div>
+</body>
+</html>
